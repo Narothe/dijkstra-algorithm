@@ -125,4 +125,6 @@ Projekt jest szczególnie przydatny do:
 
 ## Autor
 
+- [@Narothe](https://github.com/Narothe)
+
 Projekt przygotowany w Pythonie jako pomoc edukacyjna do analizy najkrótszych ścieżek w grafach.
