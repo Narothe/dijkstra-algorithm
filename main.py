@@ -146,15 +146,14 @@ def get_path(previous, start, end):
 def draw_graph(graph, shortest_path=None):
     """
     Rysuje skierowany graf z wagami.
-    Strzałki są odsunięte od wierzchołków, dzięki czemu lepiej widać,
-    do którego węzła prowadzi krawędź.
+    Najkrótsza ścieżka jest podświetlona na czerwono.
     """
 
     import networkx as nx
     import matplotlib.pyplot as plt
 
-    # Tworzymy figurę NA POCZĄTKU
-    plt.figure(figsize=(10, 6))
+    # Tworzymy figurę na początku
+    plt.figure(figsize=(12, 7))
 
     # Tworzenie grafu skierowanego
     G = nx.DiGraph()
@@ -164,7 +163,7 @@ def draw_graph(graph, shortest_path=None):
         for target, weight in neighbors.items():
             G.add_edge(source, target, weight=weight)
 
-    # Pozycje wierzchołków
+    # Ręcznie ustawione pozycje dla znanych wierzchołków
     pos = {
         'A': (0, 2),
         'B': (1, 4),
@@ -176,12 +175,24 @@ def draw_graph(graph, shortest_path=None):
         'H': (3, 0)
     }
 
+    # Sprawdzenie, czy istnieją wierzchołki bez pozycji (np. I)
+    missing_nodes = [node for node in G.nodes if node not in pos]
+
+    if missing_nodes:
+        # Generujemy automatyczny układ dla całego grafu
+        auto_pos = nx.spring_layout(G, seed=42)
+
+        # Uzupełniamy brakujące pozycje
+        for node in missing_nodes:
+            pos[node] = auto_pos[node]
+
     # Rozmiar wierzchołków
     node_size = 1200
 
     # Rysowanie wierzchołków
     nx.draw_networkx_nodes(
-        G, pos,
+        G,
+        pos,
         node_size=node_size,
         node_color='white',
         edgecolors='black',
@@ -190,14 +201,16 @@ def draw_graph(graph, shortest_path=None):
 
     # Etykiety wierzchołków
     nx.draw_networkx_labels(
-        G, pos,
+        G,
+        pos,
         font_size=14,
         font_weight='bold'
     )
 
-    # Rysowanie wszystkich krawędzi
+    # Wszystkie krawędzie
     nx.draw_networkx_edges(
-        G, pos,
+        G,
+        pos,
         edge_color='black',
         arrows=True,
         arrowsize=30,
@@ -208,10 +221,11 @@ def draw_graph(graph, shortest_path=None):
         min_target_margin=25
     )
 
-    # Wagi krawędzi
+    # Etykiety wag
     edge_labels = nx.get_edge_attributes(G, 'weight')
     nx.draw_networkx_edge_labels(
-        G, pos,
+        G,
+        pos,
         edge_labels=edge_labels,
         font_size=12,
         label_pos=0.55,
@@ -228,7 +242,8 @@ def draw_graph(graph, shortest_path=None):
         path_edges = list(zip(shortest_path[:-1], shortest_path[1:]))
 
         nx.draw_networkx_edges(
-            G, pos,
+            G,
+            pos,
             edgelist=path_edges,
             edge_color='red',
             arrows=True,
@@ -250,21 +265,23 @@ def draw_graph(graph, shortest_path=None):
 # GRAF
 # ==========================
 graph = {
-    'A': {'B': 9, 'C': 3},
-    'B': {'E': 7, 'C': 2},
-    'C': {'D': 1, 'E': 7, 'H': 20},
-    'D': {'B': 4, 'F': 9, 'E': 5},
-    'E': {'G': 8, 'F': 2, 'H': 9},
-    'F': {'G': 4},
-    'G': {'H': 2},
-    'H': {'A': 4}
+    'A': {'B': 6, 'C': 1, 'D': 3},
+    'B': {'F': 4},
+    'C': {'B': 7, 'E': 6, 'F': 12},
+    'D': {'B': 2, 'G': 14, 'E': 3, 'H': 9},
+    'E': {'F': 4},
+    'F': {'H': 1, 'I': 5},
+    'G': {'J': 2},
+    'H': {'G': 3, 'J': 8, 'I': 2},
+    'I': {'J': 4},
+    'J': {}
 }
 
 # Wierzchołek startowy
 start = 'A'
 
 # Wierzchołek końcowy
-end = 'G'
+end = 'J'
 
 # Uruchomienie algorytmu
 distances, previous = dijkstra(graph, start)
