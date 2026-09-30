@@ -1,0 +1,10 @@
+# Undirected example: tick "Directed edges" OFF (or use --undirected)
+Library Cafeteria 4
+Library Gym 2
+Cafeteria Gym 5
+Cafeteria Dorm 10
+Gym Lab 8
+Gym Dorm 3
+Lab Dorm 2
+Lab Parking 6
+Dorm Parking 5
